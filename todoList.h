@@ -1,4 +1,6 @@
 #include <string.h>
+#include <fstream>
+#include <sstream>
 using namespace std;
 
 struct Node
@@ -19,17 +21,88 @@ class todoList
 
     public :
 
-    Node* createNode(const char* t,int n) {
+    Node* createNode(const char* t,int n,bool c) {
         Node* newNode = new Node();
         strcpy(newNode->task,t);
+        newNode->check = c;
         newNode->no=n;
         return newNode;
     }
 
+    void load() 
+    {
+        ifstream inFile("toDo.txt");
+        
+        if (inFile.is_open()) {
+            string line;
+            while (getline(inFile, line)) {
+                // Use a stringstream to parse each line
+                istringstream ss(line);
+                int no;
+                char check;
+                string task;
+
+                // Read data from the line into variables
+                ss >> no >> check;
+                getline(ss >> ws, task);  // Use ws to skip leading whitespace
+
+                bool isChecked = (check == 'O');
+
+                // Create a new node with the parsed data
+                Node* newNode = createNode(task.c_str(), no, isChecked);
+
+                if (head == nullptr) {
+                    // First node in the list
+                    head = newNode;
+                    tail = newNode;
+                    newNode->next = head;
+                    newNode->prev = head;
+                } else {
+                    // Insert new node at the end and update the circular links
+                    tail->next = newNode;
+                    newNode->prev = tail;
+                    newNode->next = head;
+                    head->prev = newNode;
+                    tail = newNode;
+                }
+            }
+
+            inFile.close();
+            // std::cout << "Data read from the file successfully." << std::endl;
+        } else {
+            // std::cerr << "Unable to open the file for reading." << std::endl;
+        }
+    }
+
+    void extract()
+    {
+        Node* temp = head;
+        if (head == nullptr) 
+        {
+            std::cerr << "List is empty. Nothing to extract." << std::endl;
+            return;
+        }
+        ofstream outFile("toDo.txt");  
+        if (outFile.is_open())          // Check if the file is open
+        {  
+            do
+            {
+                outFile << temp->no <<"\t"<< (temp->check ? 'O' : 'X') <<"\t"<< temp->task << endl;  // Write to the file
+                temp = temp->next;
+                // std::cout << "Data written to the file successfully." << std::endl;
+            }
+            while(temp!=head);
+            outFile.close();  // Close the file
+        }
+        else 
+        {
+            std::cerr << "Unable to open the file for writing." << std::endl;
+        }
+    }
+
     void append(const char* t)
     {
-        Node* newNode = createNode(t,n);
-        n++;
+        Node* newNode = createNode(t,n,false);
         if(head==nullptr)
         {
             head = newNode;
@@ -55,6 +128,7 @@ class todoList
             newNode->prev=temp;
             head->prev=tail;
         }
+        n++;
         display();
     }
 
@@ -70,6 +144,19 @@ class todoList
         cout<<"Enter the no. of task to change its state : ";
         cin>>x;
         Node* temp = head;
+        bool flag=false;
+        do
+        {
+            if(temp->no==x)
+            flag=true;
+            temp=temp->next;
+        } 
+        while (temp!=head);
+        if(!flag)
+        {
+            cout<<"Task No. does not exist in the list"<<endl; 
+            return;
+        }
         do
         {
             if(temp->no==x)
@@ -109,11 +196,11 @@ class todoList
             cout<<"Invalid Input"<<endl; 
             return;
         }
-
         if(current->no==x && current->next==current)
         {
             current=head=nullptr;
             cout<<"List is now empty"<<endl;
+            n=1;
 
         }
 
@@ -124,26 +211,36 @@ class todoList
             {
                 current=current->next;
             } 
+            n=current->no;
             current->prev->next=current->next;
             current->next->prev=current->prev;
             if(current==head)
             {
                 head=current->next;
             }
-            current->next=current->prev=nullptr;          //DeLINKING current node     
+            Node *temp = current->next;
+            do
+            {
+                temp->no=n;
+                n++;
+                temp=temp->next;
+            }
+            while (temp!=head);
+            current->next=current->prev=nullptr;          //DeLINKING current node    
+
             display();
         }
     }
 
     void display()
     {
-        if(head==nullptr)
+        Node* temp = head;
+        if (head == nullptr)
         {
-            cout<<"List is empty"<<endl;
+            cerr << "List is empty. Nothing to extract." << endl;
             return;
         }
         cout << "No.\tX/O\tTasks\n";
-        Node* temp = head;
         do
         {
             cout << temp->no << "\t" << (temp->check ? "O" : "X") << "\t" << temp->task << "\n";
@@ -152,4 +249,5 @@ class todoList
         while(temp!=head);
         cout<<endl;
     }
+    
 };

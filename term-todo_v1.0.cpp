@@ -1,5 +1,5 @@
 #include<iostream>
-#include<todoList.h>
+#include"todoList.h"
 using namespace std;
 
 int main()
@@ -9,6 +9,7 @@ int main()
     char option;
     char task[100];
     int a;
+    td.load();
     do
     {
         cout<<"Choose an option to perform"<<endl;
@@ -38,13 +39,15 @@ int main()
             td.display();
             break;
         case 'E':
+        case 'e':
             end=true;
             break;
         default:
             cout<<"Invalid Input"<<endl;
             break;
-        }
+        }   
     }
     while(!end);
+    td.extract(); 
     return 0;
 }
