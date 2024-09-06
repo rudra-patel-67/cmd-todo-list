@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+
+# toDo list
+toDo.txt

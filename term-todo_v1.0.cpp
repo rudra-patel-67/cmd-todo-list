@@ -7,6 +7,8 @@ int main()
     class todoList td;
     bool end=false;
     char option;
+    char choiceForClear;
+    int choiceForSorting;
     char task[100];
     int a;
     td.load();
@@ -17,6 +19,8 @@ int main()
         cout<<"2. Delete a Task"<<endl;
         cout<<"3. Update Task"<<endl;
         cout<<"4. Display List"<<endl;
+        cout<<"5. Clear List"<<endl;
+        cout<<"6. Change Sorting of List"<<endl;
         cout<<"E. Exit"<<endl<<endl;
         cin>>option;
         cin.ignore();
@@ -38,6 +42,23 @@ int main()
         case '4':
             td.display();
             break;
+        case '5':
+            cout<<"Warning : \nThis will clear the To-Do list. Do you wish to continue (y/n) :";
+            cin>>choiceForClear;
+            if(choiceForClear=='y'||choiceForClear=='Y')
+            td.clearList();
+            cout<<"List cleared\n"<<endl;
+            break;
+        case '6':   
+            cout<<"Sort by : "<<endl;
+            cout<<"1. Oldest First"<<endl;
+            cout<<"2. Recent First"<<endl;
+            cout<<"3. Incomplete task first"<<endl;
+            cin >> choiceForSorting;
+            td.options = static_cast<Sort>(choiceForSorting);
+            // td.sortBy();
+            td.display();
+            break;
         case 'E':
         case 'e':
             end=true;
@@ -48,6 +69,5 @@ int main()
         }   
     }
     while(!end);
-    td.extract(); 
     return 0;
 }

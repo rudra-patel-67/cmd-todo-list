@@ -1,12 +1,21 @@
 #include <string.h>
+// #include "sorting.h" 
 #include <fstream>
 #include <sstream>
 using namespace std;
+
+enum Sort
+{
+    oldFirst=1,
+    recentFirst=2,
+    incompleteFirst=3
+};
 
 struct Node
 {
     bool check=false;
     int no;
+    int id;
     char task[100];
     Node* next;
     Node* prev;
@@ -14,18 +23,35 @@ struct Node
 
 class todoList
 {
-    private :
+    protected: 
     Node* head = nullptr;
     Node* tail = nullptr;
     int n=1;
+    int choiceForSorting;
 
     public :
+
+    Sort options;
+    // class sort sort;
+
+    todoList()
+    {
+        choiceForSorting=1;
+        options=oldFirst;
+        load();
+    }
+
+    ~todoList()
+    {
+        extract();
+    }
 
     Node* createNode(const char* t,int n,bool c) {
         Node* newNode = new Node();
         strcpy(newNode->task,t);
         newNode->check = c;
         newNode->no=n;
+        newNode->id=n;
         return newNode;
     }
 
@@ -77,6 +103,8 @@ class todoList
     void extract()
     {
         Node* temp = head;
+        choiceForSorting=1;
+        // sortBy();
         if (head == nullptr) 
         {
             std::cerr << "List is empty. Nothing to extract." << std::endl;
@@ -240,14 +268,71 @@ class todoList
             cerr << "List is empty. Nothing to extract." << endl;
             return;
         }
-        cout << "No.\tX/O\tTasks\n";
+
+        if(options==oldFirst)
+        {
+            cout << "\nNo.\tX/O\tTasks\n";
+            do
+            {
+                cout << temp->no << "\t" << (temp->check ? "O" : "X") << "\t" << temp->task << "\n";
+                temp = temp->next;
+            }
+            while(temp!=head);
+            cout<<endl;
+        }
+        else if(options==recentFirst)
+        {
+            temp = tail;
+            cout << "\nNo.\tX/O\tTasks\n";
+            do
+            {
+                cout << temp->no << "\t" << (temp->check ? "O" : "X") << "\t" << temp->task << "\n";
+                temp = temp->prev;
+            }
+            while(temp!=tail);
+            cout<<endl;
+        }
+        else if(options==incompleteFirst)
+        {
+            cout<<"\nIncomplete tasks : \n";
+            cout << "No.\tX/O\tTasks\n";
+            do
+            {
+                if(temp->check==false)
+                cout << temp->no << "\t" << (temp->check ? "O" : "X") << "\t" << temp->task << "\n";
+                temp = temp->next;
+            }
+            while(temp!=head);
+            cout<<endl<<endl;
+            cout<<"Completed tasks :\n";
+            cout << "No.\tX/O\tTasks\n";
+            do
+            {
+                if(temp->check==true)
+                cout << temp->no << "\t" << (temp->check ? "O" : "X") << "\t" << temp->task << "\n";
+                temp = temp->next;
+            }
+            while(temp!=head);
+            cout<<endl;
+        }
+    }
+
+    void clearList()
+    {
+        if (head == nullptr) 
+        {
+            // List is already empty
+            return;
+        }
+        Node* temp = head;
         do
         {
-            cout << temp->no << "\t" << (temp->check ? "O" : "X") << "\t" << temp->task << "\n";
-            temp = temp->next;
+            Node* nextNode = temp->next;  
+            delete temp;                 
+            temp = nextNode;              
         }
-        while(temp!=head);
-        cout<<endl;
+        while (temp != head);
+        head = nullptr; 
+        tail = nullptr; 
     }
-    
 };
