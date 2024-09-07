@@ -1,5 +1,9 @@
+#ifndef __TODOLIST_H__
+#define __TODOLIST_H__
+
 #include <string.h>
 // #include "sorting.h" 
+#include <iostream>
 #include <fstream>
 #include <sstream>
 using namespace std;
@@ -26,18 +30,19 @@ class todoList
     protected: 
     Node* head = nullptr;
     Node* tail = nullptr;
-    int n=1;
-    int choiceForSorting;
 
     public :
 
-    Sort options;
+    int n=1;
+    void rearrangingList();
+    int choiceForSorting;
+    Sort currentSortingState;
     // class sort sort;
 
     todoList()
     {
-        choiceForSorting=1;
-        options=oldFirst;
+        choiceForSorting=oldFirst;
+        currentSortingState=oldFirst;
         load();
     }
 
@@ -269,8 +274,12 @@ class todoList
             return;
         }
 
-        if(options==oldFirst)
+        if(choiceForSorting==1)
         {
+            if(currentSortingState!=oldFirst)
+            rearrangingList();
+            currentSortingState=oldFirst;
+            temp = head;
             cout << "\nNo.\tX/O\tTasks\n";
             do
             {
@@ -280,8 +289,11 @@ class todoList
             while(temp!=head);
             cout<<endl;
         }
-        else if(options==recentFirst)
+        else if(choiceForSorting==2)
         {
+            if(currentSortingState!=recentFirst)
+            rearrangingList();
+            currentSortingState=recentFirst;
             temp = tail;
             cout << "\nNo.\tX/O\tTasks\n";
             do
@@ -292,28 +304,57 @@ class todoList
             while(temp!=tail);
             cout<<endl;
         }
-        else if(options==incompleteFirst)
-        {
+        else if(choiceForSorting==3)
+        { 
+            if(currentSortingState!=incompleteFirst)
+            rearrangingList();
+            // currentSortingState=incompleteFirst;
             cout<<"\nIncomplete tasks : \n";
             cout << "No.\tX/O\tTasks\n";
-            do
-            {
-                if(temp->check==false)
-                cout << temp->no << "\t" << (temp->check ? "O" : "X") << "\t" << temp->task << "\n";
-                temp = temp->next;
+            if(currentSortingState==oldFirst)
+            {    
+                temp = head;
+                do
+                {
+                    if(temp->check==false)
+                    cout << temp->no << "\t" << (temp->check ? "O" : "X") << "\t" << temp->task << "\n";
+                    temp = temp->next;
+                }
+                while(temp!=head);
+                cout<<endl<<endl;
+                cout<<"Completed tasks :\n";
+                cout << "No.\tX/O\tTasks\n";
+                do
+                {
+                    if(temp->check==true)
+                    cout << temp->no << "\t" << (temp->check ? "O" : "X") << "\t" << temp->task << "\n";
+                    temp = temp->next;
+                }
+                while(temp!=head);
+                cout<<endl;
             }
-            while(temp!=head);
-            cout<<endl<<endl;
-            cout<<"Completed tasks :\n";
-            cout << "No.\tX/O\tTasks\n";
-            do
-            {
-                if(temp->check==true)
-                cout << temp->no << "\t" << (temp->check ? "O" : "X") << "\t" << temp->task << "\n";
-                temp = temp->next;
+            if(currentSortingState==recentFirst)
+            {    
+                temp = tail;
+                do
+                {
+                    if(temp->check==false)
+                    cout << temp->no << "\t" << (temp->check ? "O" : "X") << "\t" << temp->task << "\n";
+                    temp = temp->prev;
+                }
+                while(temp!=tail);
+                cout<<endl<<endl;
+                cout<<"Completed tasks :\n";
+                cout << "No.\tX/O\tTasks\n";
+                do
+                {
+                    if(temp->check==true)
+                    cout << temp->no << "\t" << (temp->check ? "O" : "X") << "\t" << temp->task << "\n";
+                    temp = temp->prev;
+                }
+                while(temp!=tail);
+                cout<<endl;
             }
-            while(temp!=head);
-            cout<<endl;
         }
     }
 
@@ -321,7 +362,7 @@ class todoList
     {
         if (head == nullptr) 
         {
-            // List is already empty
+            cout<<"List is already empty\n";
             return;
         }
         Node* temp = head;
@@ -334,5 +375,94 @@ class todoList
         while (temp != head);
         head = nullptr; 
         tail = nullptr; 
+        n=1;
     }
 };
+
+void todoList::rearrangingList()
+{
+    Node* temp;
+    if(choiceForSorting==1)
+    {
+        temp = head;
+        int tempNumber=0;
+        do
+        {
+            tempNumber++;
+            temp->no = tempNumber;
+            temp = temp->next;
+        } 
+        while (temp!=head);
+    }
+
+    if(choiceForSorting==2) 
+    {
+        temp = tail;
+        int tempNumber=0;
+        do
+        {
+            tempNumber++;
+            temp->no = tempNumber;
+            temp = temp->prev;
+        } 
+        while (temp!=tail);
+    }
+
+    if(choiceForSorting==3) 
+    {
+        if(currentSortingState==oldFirst)
+        {
+            temp = head;
+            int tempNumber=0;
+            do
+            {
+                if(temp->check==false)
+                {
+                    tempNumber++;
+                    temp->no = tempNumber;
+                }
+                temp = temp->next;
+            } 
+            while (temp!=head);
+
+            do
+            {
+                if(temp->check==true)
+                {
+                    tempNumber++;
+                    temp->no = tempNumber;
+                }
+                temp = temp->next;
+            } 
+            while (temp!=head);
+        }
+        if(currentSortingState==recentFirst)
+        {
+            temp = tail;
+            int tempNumber=0;
+            do
+            {
+                if(temp->check==false)
+                {
+                    tempNumber++;
+                    temp->no = tempNumber;
+                }
+                temp = temp->prev;
+            } 
+            while (temp!=tail);
+
+            do
+            {
+                if(temp->check==true)
+                {
+                    tempNumber++;
+                    temp->no = tempNumber;
+                }
+                temp = temp->prev;
+            } 
+            while (temp!=tail);
+        }
+    }
+}
+
+#endif

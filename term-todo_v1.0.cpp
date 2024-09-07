@@ -1,4 +1,5 @@
 #include<iostream>
+#include<conio.h>
 #include"todoList.h"
 using namespace std;
 
@@ -8,7 +9,6 @@ int main()
     bool end=false;
     char option;
     char choiceForClear;
-    int choiceForSorting;
     char task[100];
     int a;
     td.load();
@@ -46,16 +46,17 @@ int main()
             cout<<"Warning : \nThis will clear the To-Do list. Do you wish to continue (y/n) :";
             cin>>choiceForClear;
             if(choiceForClear=='y'||choiceForClear=='Y')
-            td.clearList();
-            cout<<"List cleared\n"<<endl;
+            {
+                td.clearList();
+                cout<<"List cleared\n"<<endl;
+            }
             break;
         case '6':   
             cout<<"Sort by : "<<endl;
             cout<<"1. Oldest First"<<endl;
             cout<<"2. Recent First"<<endl;
             cout<<"3. Incomplete task first"<<endl;
-            cin >> choiceForSorting;
-            td.options = static_cast<Sort>(choiceForSorting);
+            cin >>td.choiceForSorting;
             // td.sortBy();
             td.display();
             break;
