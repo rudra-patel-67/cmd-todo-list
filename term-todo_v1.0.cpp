@@ -10,7 +10,6 @@ int main()
     char choiceForClear;
     char task[100];
     int a;
-    td.load();
     do
     {
         cout<<"Choose an option to perform"<<endl;
@@ -23,7 +22,13 @@ int main()
         cout<<"E. Exit"<<endl<<endl;
         cin>>option;
         cin.ignore();
-        system("cls");
+        system(
+            #ifdef _WIN32
+                "cls"
+            #else
+                "clear"
+            #endif
+        );
         switch (option)
         {
         case '1':
@@ -48,6 +53,7 @@ int main()
             {
                 td.clearList();
                 cout<<"List cleared\n"<<endl;
+                remove("toDo.txt");
             }
             break;
         case '6':   
